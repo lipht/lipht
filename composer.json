@@ -1,0 +1,19 @@
+{
+    "name": "lipht/lipht",
+    "description": "Lipht Framework: Core components",
+    "type": "library",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "autoload": {
+        "psr-4": {
+            "Lipht\\": "src/",
+            "Test\\": "test/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit --bootstrap vendor/autoload.php test"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.0"
+    }
+}
