@@ -73,6 +73,16 @@ class Container {
         return $local ?: $this->parent->findDependency($search);
     }
 
+    public function inject($target, $args = []) {
+        if (is_string($target) && class_exists($target))
+            return $this->injectConstructor($target, $args);
+
+        if (is_callable($target))
+            return $this->injectMethod($target, $args);
+
+        throw new \Exception('Cannot invoke target, type not supported. ('.$target.')');
+    }
+
     private function findDependencyLocally($search) {
         $searchMeta = new \ReflectionClass($search);
         foreach (array_reverse($this->services) as $service) {
@@ -98,16 +108,6 @@ class Container {
 
         $injected = $this->provideForFunction($constructor, []);
         return $meta->newInstanceArgs($injected);
-    }
-
-    public function inject($target, $args = []) {
-        if (is_string($target) && class_exists($target))
-            return $this->injectConstructor($target, $args);
-
-        if (is_callable($target))
-            return $this->injectMethod($target, $args);
-
-        throw new \Exception('Cannot invoke target, type not supported. ('.$target.')');
     }
 
     private function injectConstructor(string $classname, array $args) {
