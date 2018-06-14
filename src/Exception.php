@@ -1,7 +1,7 @@
 <?php
 namespace Lipht;
 
-class CustomException extends \Exception {
+class Exception extends \Exception {
     private $extraData;
 
     public function __construct($customCode, $extraData, \Throwable $parent) {
