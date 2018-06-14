@@ -15,7 +15,7 @@ trait Fillable {
         }
     }
 
-    public static function many(array $items) {
+    public static function many(array $items) : array {
         return array_map(
             function($item) {
                 return new static($item);
