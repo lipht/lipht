@@ -87,6 +87,7 @@ class Container {
         $searchMeta = new \ReflectionClass($search);
         foreach (array_reverse($this->services) as $service) {
             if ($service->meta->getName() === $searchMeta->getName()
+                || is_subclass_of($service->meta->getName(), $searchMeta->getName())
                 || ($searchMeta->isInterface() && $service->meta->implementsInterface($searchMeta->getName())))
                 return $service;
         }
