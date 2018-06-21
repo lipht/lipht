@@ -83,6 +83,14 @@ class Container {
         throw new \Exception('Cannot invoke target, type not supported. ('.$target.')');
     }
 
+    public function reset() {
+        if (count($this->stack))
+            throw new \Exception('Cannot reset container during stack injection.');
+
+        $this->services = [];
+        return $this;
+    }
+
     private function findDependencyLocally($search) {
         $searchMeta = new \ReflectionClass($search);
         foreach (array_reverse($this->services) as $service) {

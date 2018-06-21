@@ -5,7 +5,7 @@ use Lipht\Module as BaseModule;
 
 class RootModule extends BaseModule {
     public static function dummy($callback = null) {
-        return static::runInChildModule(__METHOD__, $callback);
+        return static::coldStartChildModule(__METHOD__, $callback);
     }
 
     public static function listServices() {

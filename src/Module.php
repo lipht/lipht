@@ -2,58 +2,78 @@
 namespace Lipht;
 
 abstract class Module {
-    protected static $init = false;
-    protected static $parentContainer = null;
-    protected static $container = null;
-    protected static $children = [];
+    protected $parentContainer = null;
+    protected $container = null;
+    protected $children = [];
+
+    private static $instances = [];
 
     abstract protected static function listServices();
 
+    private function __construct(Container $container = null) {
+        if (!$this->parentContainer)
+            $this->parentContainer = $container;
+
+        $this->children = [];
+        $this->container()->reset()->add(static::listServices());
+    }
+
     public static function init(Container $container = null) {
-        if (!static::$parentContainer) {
-            static::$parentContainer = $container;
-        }
+        if (self::class === static::class)
+            throw new \Exception('Cannot initialize abstract base module');
 
-        static::container()->add(static::listServices());
-        return static::class;
+        $name = static::class;
+        $instance = new $name($container);
+        self::$instances[static::class] = $instance;
+        return $instance;
     }
 
-    public static function container() {
-        if (!static::$container) {
-            static::$container = new Container(static::$parentContainer);
-        }
+    public static function getInstance() {
+        if (!isset(self::$instances[static::class]))
+            throw new \Exception('Cannot use uninitialized module');
 
-        return static::$container;
+        return self::$instances[static::class];
     }
+
+    public static function coldStartChildModule($name, $callback = null) {
+        return static::getInstance()->runInChildModule($name, $callback);
+    }
+
+    public function container() {
+        if (!$this->container)
+            $this->container = new Container($this->parentContainer);
+
+        return $this->container;
+    }
+
     public function get($service) {
-        return static::container()->get($service);
+        return $this->container()->get($service);
     }
     public function inject($callable, $args = array()) {
-        return static::container()->inject($callable, $args);
+        return $this->container()->inject($callable, $args);
     }
 
     public function __call($method, $args) {
         $callback = isset($args[0]) ? $args[0] : null;
         $name = static::class.'::'.$method;
 
-        return static::runInChildModule($name, $callback);
+        return $this->runInChildModule($name, $callback);
     }
 
-    public static function runInChildModule($name, $callback = null) {
+    public function runInChildModule($name, $callback = null) {
         $parts = explode('::', str_replace('\\', '/', $name));
         $key = str_replace('/', '\\', dirname($parts[0]).'/'.ucfirst($parts[1]));
 
-        if (!isset(static::$children[$key])) {
+        if (!isset($this->children[$key])) {
             $config = $key.'\Module';
 
-            static::$children[$key] = new $config();
-            $config::init();
+            $this->children[$key] = $config::init($this->container());
         }
 
         if (!is_callable($callback)) {
-            return static::$children[$key];
+            return $this->children[$key];
         }
 
-        return static::$children[$key]->inject($callback);
+        return $this->children[$key]->inject($callback);
     }
 }
