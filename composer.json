@@ -6,7 +6,11 @@
     "prefer-stable": true,
     "autoload": {
         "psr-4": {
-            "Lipht\\": "src/",
+            "Lipht\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
             "Test\\": "test/"
         }
     },
