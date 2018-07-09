@@ -2,7 +2,7 @@
 namespace Lipht;
 
 trait Fillable {
-    public function __construct($attributes) {
+    public function __construct($attributes = []) {
         $this->fill($attributes);
     }
 
