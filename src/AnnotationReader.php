@@ -6,8 +6,9 @@ class AnnotationReader {
         if (is_a($target, \ReflectionClass::class))
             return static::parseClass($target);
 
-        if (is_a($target, \ReflectionMethod::class))
-            return static::parseMethod($target);
+        if (is_a($target, \ReflectionMethod::class)
+            || is_a($target, \ReflectionProperty::class))
+            return static::parseMember($target);
     }
 
     private static function parseClass(\ReflectionClass $target) {
@@ -26,7 +27,7 @@ class AnnotationReader {
         ];
     }
 
-    private static function parseMethod(\ReflectionMethod $target) {
+    private static function parseMember($target) {
         $annotations = static::parseDoc($target->getDocComment());
         return (object)['tags' => $annotations];
     }
