@@ -88,8 +88,6 @@ abstract class Enum {
             $values[] = $value;
 
             static::$$name = new static($value, $name, $label);
-
-            var_dump(static::$$name);
         }
 
         self::$baked[] = static::class;
