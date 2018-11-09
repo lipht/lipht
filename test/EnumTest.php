@@ -17,6 +17,16 @@ class EnumTest extends TestCase {
         $this->assertEquals(1, EnumHelper::$baz->ordinal);
         $this->assertEquals('Friendly Name', EnumHelper::$baz->label);
     }
+
+    public function testCallWithEnumType() {
+        Enum::bakeAll();
+
+        $helper = function (EnumHelper $value) {
+            $this->assertEquals('baz', $value);
+        };
+
+        $helper(EnumHelper::$baz);
+    }
 }
 
 class EnumHelper extends Enum {
