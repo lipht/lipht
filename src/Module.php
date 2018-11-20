@@ -49,6 +49,7 @@ abstract class Module {
     public function get($service) {
         return $this->container()->get($service);
     }
+
     public function inject($callable, $args = array()) {
         return $this->container()->inject($callable, $args);
     }

@@ -16,6 +16,13 @@ class EnumTest extends TestCase {
         $this->assertEquals('baz', (string) EnumHelper::$baz);
         $this->assertEquals(1, EnumHelper::$baz->ordinal);
         $this->assertEquals('Friendly Name', EnumHelper::$baz->label);
+        $this->assertEquals('custom value', EnumHelper::$bar->customAnnotation);
+
+        $this->assertEquals([
+            EnumHelper::$foo,
+            EnumHelper::$bar,
+            EnumHelper::$baz,
+        ], EnumHelper::values());
     }
 
     public function testCallWithEnumType() {
@@ -31,6 +38,8 @@ class EnumTest extends TestCase {
 
 class EnumHelper extends Enum {
     static $foo;
+
+    /** @customAnnotation(custom value) */
     static $bar = 3;
 
     /** @label(Friendly Name) */

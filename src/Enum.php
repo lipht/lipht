@@ -5,24 +5,22 @@ abstract class Enum {
     // element
     private $ordinal;
     private $name;
-    private $label;
+    private $extra;
 
-    private function __construct($ordinal, $name, $label = null) {
+    private function __construct($ordinal, $name, $extra = null) {
         $this->ordinal = $ordinal;
         $this->name = $name;
-        $this->label = $label ?? $name;
+        $this->extra = $extra ?? [];
     }
 
     public function __get($propertyName) {
-        switch($propertyName) {
-            case 'ordinal':
-                return $this->ordinal;
-            case 'label':
-                return $this->label;
-        }
+        if ($propertyName === 'ordinal')
+            return $this->ordinal;
 
-        $className = static::class;
-        throw new \Exception("Undefined property {$className}::{$propertyName}");
+        if (in_array($propertyName, array_keys($this->extra)))
+            return $this->extra[$propertyName];
+
+        return null;
     }
 
     public function __toString() {
@@ -31,6 +29,20 @@ abstract class Enum {
 
     // definition
     private static $baked = [];
+    private static $properties = [];
+
+    public static function values() {
+        $meta = new \ReflectionClass(static::class);
+        if ($meta->isAbstract())
+            return [];
+
+        if (!in_array(static::class, self::$baked)) {
+            $className = static::class;
+            throw new \Exception("Cannot read properties of unbaked Enum ({$className}). Please bake it first");
+        }
+
+        return self::$properties[static::class];
+    }
 
     public static function bake() {
         if (in_array(static::class, self::$baked))
@@ -50,15 +62,18 @@ abstract class Enum {
             if (!$prop->isPublic())
                 return null;
 
-            $label = null;
+            $extra = [];
             $anns = AnnotationReader::parse($prop);
 
-            foreach ($anns->tags as $tag) {
-                if ($tag->name != 'label')
-                    continue;
+            // var_dump($anns);
 
-                [$label] = $tag->args;
-                break;
+            foreach ($anns->tags as $tag) {
+                $tagValue = array_filter($tag->args);
+                if (count($tagValue) === 1) {
+                    [$tagValue] = $tagValue;
+                }
+
+                $extra[$tag->name] = $tagValue;
             }
 
             $value = $prop->getValue();
@@ -74,23 +89,31 @@ abstract class Enum {
             return (object) [
                 'name' => $prop->getName(),
                 'value' => $value,
-                'label' => $label,
+                'extra' => $extra,
             ];
         }, $props));
 
+        $properties = [];
         foreach ($internal as $element) {
             while(in_array($nextValue, $values)) $nextValue++;
 
             $value = $element->value ?? $nextValue;
             $name = $element->name;
-            $label = $element->label;
+            $extra = $element->extra;
+
+            if (!isset($extra['label'])) {
+                $extra['label'] = $name;
+            }
 
             $values[] = $value;
 
-            static::$$name = new static($value, $name, $label);
+            $property = new static($value, $name, $extra);
+            static::$$name = $property;
+            $properties[] = $property;
         }
 
         self::$baked[] = static::class;
+        self::$properties[static::class] = $properties;
     }
 
     public static function bakeAll() {
