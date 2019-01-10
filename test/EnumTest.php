@@ -18,6 +18,8 @@ class EnumTest extends TestCase {
         $this->assertEquals('Friendly Name', EnumHelper::$baz->label);
         $this->assertEquals('custom value', EnumHelper::$bar->customAnnotation);
 
+        $this->assertEquals(EnumHelper::$foo, EnumHelper::byName('foo'));
+
         $this->assertEquals([
             EnumHelper::$foo,
             EnumHelper::$bar,

@@ -44,6 +44,18 @@ abstract class Enum {
         return self::$properties[static::class];
     }
 
+    public static function byName($name) {
+        foreach(self::values() as $item) {
+            if ($item->name !== $name) {
+                continue;
+            }
+
+            return $item;
+        }
+
+        return null;
+    }
+
     public static function bake() {
         if (in_array(static::class, self::$baked))
             return;
