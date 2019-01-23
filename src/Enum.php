@@ -1,7 +1,7 @@
 <?php
 namespace Lipht;
 
-abstract class Enum {
+abstract class Enum implements \JsonSerializable {
     // element
     private $ordinal;
     private $name;
@@ -21,6 +21,10 @@ abstract class Enum {
             return $this->extra[$propertyName];
 
         return null;
+    }
+
+    public function jsonSerialize() {
+        return $this->name;
     }
 
     public function __toString() {
@@ -65,8 +69,6 @@ abstract class Enum {
             $extra = [];
             $anns = AnnotationReader::parse($prop);
 
-            // var_dump($anns);
-
             foreach ($anns->tags as $tag) {
                 $tagValue = array_filter($tag->args);
                 if (count($tagValue) === 1) {
@@ -79,11 +81,12 @@ abstract class Enum {
             $value = $prop->getValue();
             $value = is_numeric($value) ? intval($value) : null;
 
-            if (!is_null($value)
-                && !in_array($value, $values)) {
-                $values[] = $value;
-            } else {
+            if (in_array($value, $values)) {
                 $value = null;
+            }
+
+            if (!is_null($value)) {
+                $values[] = $value;
             }
 
             return (object) [

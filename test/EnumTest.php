@@ -37,6 +37,16 @@ class EnumTest extends TestCase {
 
         $helper(EnumHelper::$baz);
     }
+
+    public function testJsonSerialization()
+    {
+        Enum::bakeAll();
+
+        $expected = json_encode(['subject' => 'foo']);
+        $result = json_encode(['subject' => EnumHelper::$foo]);
+
+        $this->assertEquals($expected, $result);
+    }
 }
 
 class EnumHelper extends Enum {
