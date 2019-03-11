@@ -78,7 +78,7 @@ abstract class Enum implements \JsonSerializable {
                 $extra[$tag->name] = $tagValue;
             }
 
-            $value = $prop->getValue();
+            $value = $prop->getValue($item);
             $value = is_numeric($value) ? intval($value) : null;
 
             if (in_array($value, $values)) {

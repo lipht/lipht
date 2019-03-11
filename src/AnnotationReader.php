@@ -33,7 +33,7 @@ class AnnotationReader {
     }
 
     private static function parseDoc($doc) {
-        $pattern = '/@(\w+)\(((?:\s*[^\,\(\)\s]*\s*\,?)*)\)/i';
+        $pattern = '/@(\w+)(?:\(((?:\s*[^\,\(\)\s]*\s*\,?)*)\))?/i';
         $matches = [];
         $annotations = [];
 
