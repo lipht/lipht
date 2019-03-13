@@ -112,7 +112,7 @@ abstract class Enum implements \JsonSerializable {
 
             $property = new static($value, $name, $extra);
             static::$$name = $property;
-            $properties[] = $property;
+            $properties[$value] = $property;
         }
 
         self::$baked[] = static::class;
