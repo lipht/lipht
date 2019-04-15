@@ -22,9 +22,9 @@ class EnumTest extends TestCase {
         $this->assertEquals(EnumHelper::$foo, EnumHelper::$$name);
 
         $this->assertEquals([
-            EnumHelper::$foo,
-            EnumHelper::$bar,
-            EnumHelper::$baz,
+            '0' => EnumHelper::$foo,
+            '3' => EnumHelper::$bar,
+            '1' => EnumHelper::$baz,
         ], EnumHelper::values());
     }
 
