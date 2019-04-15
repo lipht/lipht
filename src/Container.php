@@ -38,7 +38,7 @@ class Container {
     }
 
     public function isAvailableLocally(string $service) : bool {
-        return !!$this->findDependencyLocally($search);
+        return !!$this->findDependencyLocally($service);
     }
 
     public function get(string $service) {
@@ -147,7 +147,7 @@ class Container {
 
     private function fetchReflectionFunction(Callable $callable) {
         if (is_string($callable) && strpos($callable, '::'))
-            return new \ReflectionMethod($callable);
+            $callable = explode('::', $callable);
 
         if (is_array($callable))
             return new \ReflectionMethod($callable[0], $callable[1]);

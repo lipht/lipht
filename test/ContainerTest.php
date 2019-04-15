@@ -29,6 +29,25 @@ class ContainerTest extends TestCase {
         });
     }
 
+    public function testAvailability() {
+        $parent = new Container();
+        $parent->add(new DummyService('alice'));
+
+        $subject = new Container($parent);
+        $subject->add(new DummyService('bob'));
+
+        $subject2 = new Container($parent);
+
+        $this->assertTrue($parent->isAvailable(DummyService::class));
+        $this->assertTrue($parent->isAvailableLocally(DummyService::class));
+
+        $this->assertTrue($subject->isAvailable(DummyService::class));
+        $this->assertTrue($subject->isAvailableLocally(DummyService::class));
+
+        $this->assertTrue($subject2->isAvailable(DummyService::class));
+        $this->assertFalse($subject2->isAvailableLocally(DummyService::class));
+    }
+
     public function testConstructorInjection() {
         $subject = $this->getSubject();
         $subject->add(DummyService::class);
