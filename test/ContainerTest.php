@@ -22,10 +22,19 @@ class ContainerTest extends TestCase {
         $subject = $this->getSubject();
         $subject->add(new DummyService('steve'));
 
-        $self = $this;
-        $this->assertServiceIsInjected($subject, function(DummyService $steve) use($self) {
-            $self->assertEquals('steve', $steve->getName());
+        $subject2 = $this->getSubject();
+        $subject2->add(DummyService::class, function($service) {
+            return new DummyService('alex');
+        });
+
+        $this->assertServiceIsInjected($subject, function(DummyService $steve) {
+            $this->assertEquals('steve', $steve->getName());
             return $steve;
+        });
+
+        $this->assertServiceIsInjected($subject2, function(DummyService $alex) {
+            $this->assertEquals('alex', $alex->getName());
+            return $alex;
         });
     }
 

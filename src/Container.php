@@ -11,22 +11,23 @@ class Container {
         $this->parent = $parent;
     }
 
-    public function add($service) : void {
+    public function add($service, Callable $provider = null) : void {
         if (is_array($service)) {
             foreach ($service as $part) {
-                $this->add($part);
+                $this->add($part, $provider);
             }
             return;
         }
 
         $meta = new \ReflectionClass($service);
 
-        if (!$meta->isInstantiable())
+        if (!$meta->isInstantiable() && !$provider)
             throw new \Exception('Cannot add service, class not instantiable. ('.$meta->getName().')');
 
         $this->services[] = (object)[
             'subject' => $service,
             'meta' => $meta,
+            'provider' => $provider,
         ];
     }
 
@@ -104,9 +105,23 @@ class Container {
     }
 
     private function hydrate($service) {
-        if (is_string($service->subject))
-            $service->subject = $this->buildDependency($service->meta);
+        if (!is_string($service->subject)) {
+            return $service->subject;
+        }
 
+        if (!$service->provider) {
+            $service->subject = $this->buildDependency($service->meta);
+            return $service->subject;
+        }
+
+        $provided = call_user_func($service->provider, $service);
+        $providedMeta = new \ReflectionClass($provided);
+        if ($providedMeta->getName() != $service->meta->getName()) {
+            throw new \Exception('Cannot invoke target, wrong type from provider. (Expected any type of '.$service->subject.')');
+        }
+
+        $service->subject = $provided;
+        $service->meta = $providedMeta;
         return $service->subject;
     }
 

@@ -8,14 +8,18 @@ abstract class Module {
 
     private static $instances = [];
 
-    abstract protected static function listServices();
+    // Declare a static listServices(Container) to provide services in your module
 
     private function __construct(Container $container = null) {
         if (!$this->parentContainer)
             $this->parentContainer = $container;
 
         $this->children = [];
-        $this->container()->reset()->add(static::listServices());
+        $this->container()->reset();
+
+        if (method_exists(static::class, 'listServices')) {
+            $this->container()->add(static::listServices($this->container()) ?? []);
+        }
     }
 
     public static function init(Container $container = null) {
