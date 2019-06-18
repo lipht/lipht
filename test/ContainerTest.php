@@ -81,6 +81,18 @@ class ContainerTest extends TestCase {
         );
     }
 
+    /**
+     * @expectedException Exception
+     * @expectedExceptionMessage Cannot invoke target, type not supported. (Test\ContainerTestDummyConsumer, invalid)
+     */
+    public function testInstanceMethodInjectionMethodNotFound() {
+        $subject = $this->getSubject();
+        $subject->add(DummyService::class);
+
+        $helper = new DummyConsumer(new DummyService('steve'));
+        $subject->inject([$helper, 'invalid']);
+    }
+
     public function testChildContainerInjection() {
         $parent = $this->getSubject();
         $parent->add(DummyService::class);

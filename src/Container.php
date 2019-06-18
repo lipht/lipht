@@ -81,6 +81,12 @@ class Container {
         if (is_callable($target))
             return $this->injectMethod($target, $args);
 
+        if (is_array($target))
+            $target = implode(', ', [
+                get_class($target[0]),
+                $target[1]
+            ]);
+
         throw new \Exception('Cannot invoke target, type not supported. ('.$target.')');
     }
 
