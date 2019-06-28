@@ -184,8 +184,13 @@ class Container {
                 continue;
             }
 
-            if ($param->isOptional()) {
-                $injected[] = $param->getDefaultValue();
+            $default = null;
+            try {
+                $default = $param->getDefaultValue();
+            } catch (\ReflectionException $e) {}
+
+            if (!is_null($default) || $param->isOptional()) {
+                $injected[] = $default;
                 continue;
             }
 
