@@ -48,6 +48,7 @@ class Container {
             throw new \Exception('Cannot invoke target, cyclical dependency detected. ('.$service.')');
 
         $this->stack[] = $service;
+        $instance = null;
 
         try {
             $dependency = $this->findDependency($service);
