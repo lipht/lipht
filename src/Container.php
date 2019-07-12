@@ -195,7 +195,7 @@ class Container {
                 continue;
             }
 
-            $injected[] = $this->get($param->getType()->__toString());
+            $injected[] = $this->get(strval($param->getType()));
         }
 
         return $injected;
