@@ -6,6 +6,11 @@ use ReflectionMethod;
 use ReflectionProperty;
 
 class AnnotationReader {
+
+    private function __construct()
+    {
+    }
+
     public static function parse($target) {
         if (is_a($target, ReflectionClass::class))
             return static::parseClass($target);
