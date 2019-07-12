@@ -18,6 +18,8 @@ class AnnotationReader {
         if (is_a($target, ReflectionMethod::class)
             || is_a($target, ReflectionProperty::class))
             return static::parseMember($target);
+
+        throw new \Exception('Invalid target, expected a Reflection instance');
     }
 
     private static function parseClass(\ReflectionClass $target) {
