@@ -1,6 +1,8 @@
 <?php
 namespace Lipht;
 
+use ReflectionException;
+
 abstract class Module {
     protected $parentContainer = null;
     protected $container = null;

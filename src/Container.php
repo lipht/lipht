@@ -1,6 +1,11 @@
 <?php
 namespace Lipht;
 
+use ReflectionClass;
+use ReflectionException;
+use ReflectionFunction;
+use ReflectionMethod;
+
 class Container {
     private $parent = null;
     private $services = [];
@@ -19,7 +24,7 @@ class Container {
             return;
         }
 
-        $meta = new \ReflectionClass($service);
+        $meta = new ReflectionClass($service);
 
         if (!$meta->isInstantiable() && !$provider)
             throw new \Exception('Cannot add service, class not instantiable. ('.$meta->getName().')');
@@ -100,7 +105,7 @@ class Container {
     }
 
     private function findDependencyLocally($search) {
-        $searchMeta = new \ReflectionClass($search);
+        $searchMeta = new ReflectionClass($search);
         foreach (array_reverse($this->services) as $service) {
             if ($service->meta->getName() === $searchMeta->getName()
                 || is_subclass_of($service->meta->getName(), $searchMeta->getName())
@@ -122,7 +127,7 @@ class Container {
         }
 
         $provided = call_user_func($service->provider, $service);
-        $providedMeta = new \ReflectionClass($provided);
+        $providedMeta = new ReflectionClass($provided);
         if ($providedMeta->getName() != $service->meta->getName()) {
             throw new \Exception('Cannot invoke target, wrong type from provider. (Expected any type of '.$service->subject.')');
         }
@@ -142,7 +147,7 @@ class Container {
     }
 
     private function injectConstructor(string $classname, array $args) {
-        $ref = new \ReflectionClass($classname);
+        $ref = new ReflectionClass($classname);
         if (!$ref->isInstantiable())
             throw new \Exception('Cannot invoke target, class not instantiable. ('.$classname.')');
 
@@ -172,9 +177,9 @@ class Container {
             $callable = explode('::', $callable);
 
         if (is_array($callable))
-            return new \ReflectionMethod($callable[0], $callable[1]);
+            return new ReflectionMethod($callable[0], $callable[1]);
 
-        return new \ReflectionFunction($callable);
+        return new ReflectionFunction($callable);
     }
 
     private function provideForFunction($ref, array $args) {
@@ -188,7 +193,7 @@ class Container {
             $default = null;
             try {
                 $default = $param->getDefaultValue();
-            } catch (\ReflectionException $e) {}
+            } catch (ReflectionException $e) {}
 
             if (!is_null($default) || $param->isOptional()) {
                 $injected[] = $default;

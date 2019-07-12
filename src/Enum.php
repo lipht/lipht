@@ -1,7 +1,11 @@
 <?php
 namespace Lipht;
 
-abstract class Enum implements \JsonSerializable {
+use JsonSerializable;
+use ReflectionClass;
+use ReflectionException;
+
+abstract class Enum implements JsonSerializable {
     // element
     private $ordinal;
     private $name;
@@ -36,7 +40,7 @@ abstract class Enum implements \JsonSerializable {
     private static $properties = [];
 
     public static function values() {
-        $meta = new \ReflectionClass(static::class);
+        $meta = new ReflectionClass(static::class);
         if ($meta->isAbstract())
             return [];
 
@@ -52,7 +56,7 @@ abstract class Enum implements \JsonSerializable {
         if (in_array(static::class, self::$baked))
             return;
 
-        $meta = new \ReflectionClass(static::class);
+        $meta = new ReflectionClass(static::class);
         if ($meta->isAbstract())
             return;
 

@@ -1,13 +1,17 @@
 <?php
 namespace Lipht;
 
+use ReflectionClass;
+use ReflectionMethod;
+use ReflectionProperty;
+
 class AnnotationReader {
     public static function parse($target) {
-        if (is_a($target, \ReflectionClass::class))
+        if (is_a($target, ReflectionClass::class))
             return static::parseClass($target);
 
-        if (is_a($target, \ReflectionMethod::class)
-            || is_a($target, \ReflectionProperty::class))
+        if (is_a($target, ReflectionMethod::class)
+            || is_a($target, ReflectionProperty::class))
             return static::parseMember($target);
     }
 
