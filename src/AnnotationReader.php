@@ -11,6 +11,11 @@ class AnnotationReader {
     {
     }
 
+    /**
+     * @param ReflectionMethod|ReflectionProperty|ReflectionClass $target
+     * @return AnnotatedMember|AnnotatedClass
+     * @throws \Exception
+     */
     public static function parse($target) {
         if (is_a($target, ReflectionClass::class))
             return static::parseClass($target);
@@ -22,7 +27,12 @@ class AnnotationReader {
         throw new \Exception('Invalid target, expected a Reflection instance');
     }
 
-    private static function parseClass(\ReflectionClass $target) {
+    /**
+     * @param ReflectionClass $target
+     * @return AnnotatedClass
+     * @throws \Exception
+     */
+    private static function parseClass(ReflectionClass $target) {
         $annotations = static::parseDoc($target->getDocComment());
         $children = [];
         foreach ($target->getMethods() as $method) {
@@ -38,6 +48,10 @@ class AnnotationReader {
         ]);
     }
 
+    /**
+     * @param ReflectionMethod|ReflectionProperty $target
+     * @return AnnotatedMember
+     */
     private static function parseMember($target) {
         $annotations = static::parseDoc($target->getDocComment());
 
@@ -46,6 +60,10 @@ class AnnotationReader {
         ]);
     }
 
+    /**
+     * @param string|bool $doc
+     * @return Annotation[]
+     */
     private static function parseDoc($doc) {
         static $pattern = '/@(\w+)(?:\(((?:\s*[^\,\(\)\s]*\s*\,?)*)\))?/i';
         $matches = [];

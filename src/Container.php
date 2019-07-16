@@ -7,15 +7,35 @@ use ReflectionFunction;
 use ReflectionMethod;
 
 class Container {
+    /**
+     * @var Container|null $parent
+     */
     private $parent = null;
+
+    /**
+     * @var ServiceProvider[] $services
+     */
     private $services = [];
 
+    /**
+     * @var string[] $stack
+     */
     private $stack = [];
 
+    /**
+     * Container constructor.
+     * @param Container|null $parent
+     */
     public function __construct(Container $parent = null) {
         $this->parent = $parent;
     }
 
+    /**
+     * @param object|array $service
+     * @param callable|null $provider
+     * @throws ReflectionException
+     * @throws \Exception
+     */
     public function add($service, Callable $provider = null) : void {
         if (is_array($service)) {
             foreach ($service as $part) {
@@ -36,6 +56,11 @@ class Container {
         ]);
     }
 
+    /**
+     * @param string $service
+     * @return bool
+     * @throws ReflectionException
+     */
     public function isAvailable(string $service) : bool {
         if ($this->isAvailableLocally($service))
             return true;
@@ -43,10 +68,20 @@ class Container {
         return $this->parent && $this->parent->isAvailable($service);
     }
 
+    /**
+     * @param string $service
+     * @return bool
+     * @throws ReflectionException
+     */
     public function isAvailableLocally(string $service) : bool {
         return !!$this->findDependencyLocally($service);
     }
 
+    /**
+     * @param string $service
+     * @return object
+     * @throws \Exception
+     */
     public function get(string $service) {
 
         if (in_array($service, $this->stack))
@@ -71,6 +106,11 @@ class Container {
         return $instance;
     }
 
+    /**
+     * @param string $search
+     * @return ServiceProvider
+     * @throws ReflectionException
+     */
     public function findDependency($search) {
         $local = $this->findDependencyLocally($search);
 
@@ -80,6 +120,12 @@ class Container {
         return $local ?: $this->parent->findDependency($search);
     }
 
+    /**
+     * @param string|callable|array $target
+     * @param array $args
+     * @return mixed|object
+     * @throws \Exception
+     */
     public function inject($target, $args = []) {
         if (is_string($target) && class_exists($target))
             return $this->injectConstructor($target, $args);
@@ -96,6 +142,10 @@ class Container {
         throw new \Exception('Cannot invoke target, type not supported. ('.$target.')');
     }
 
+    /**
+     * @return $this
+     * @throws \Exception
+     */
     public function reset() {
         if (count($this->stack))
             throw new \Exception('Cannot reset container during stack injection.');
@@ -104,6 +154,11 @@ class Container {
         return $this;
     }
 
+    /**
+     * @param string $search
+     * @return ServiceProvider|bool
+     * @throws ReflectionException
+     */
     private function findDependencyLocally($search) {
         $searchMeta = new ReflectionClass($search);
         foreach (array_reverse($this->services) as $service) {
@@ -116,6 +171,12 @@ class Container {
         return false;
     }
 
+    /**
+     * @param ServiceProvider $service
+     * @return object
+     * @throws ReflectionException
+     * @throws \Exception
+     */
     private function hydrate($service) {
         if (!is_string($service->subject)) {
             return $service->subject;
@@ -137,7 +198,12 @@ class Container {
         return $service->subject;
     }
 
-    private function buildDependency(\ReflectionClass $meta) {
+    /**
+     * @param ReflectionClass $meta
+     * @return object
+     * @throws \Exception
+     */
+    private function buildDependency(ReflectionClass $meta) {
         $constructor = $meta->getConstructor();
         if (!$constructor)
             return $meta->newInstanceArgs([]);
@@ -146,6 +212,13 @@ class Container {
         return $meta->newInstanceArgs($injected);
     }
 
+    /**
+     * @param string $classname
+     * @param array $args
+     * @return object
+     * @throws ReflectionException
+     * @throws \Exception
+     */
     private function injectConstructor(string $classname, array $args) {
         $ref = new ReflectionClass($classname);
         if (!$ref->isInstantiable())
@@ -159,6 +232,13 @@ class Container {
         return $ref->newInstanceArgs($injected);
     }
 
+    /**
+     * @param callable $method
+     * @param array $args
+     * @return mixed
+     * @throws ReflectionException
+     * @throws \Exception
+     */
     private function injectMethod(Callable $method, array $args) {
         $ref = $this->fetchReflectionFunction($method);
         $injected = $this->provideForFunction($ref, $args);
@@ -172,6 +252,11 @@ class Container {
         return $ref->invokeArgs($injected);
     }
 
+    /**
+     * @param callable $callable
+     * @return ReflectionFunction|ReflectionMethod
+     * @throws ReflectionException
+     */
     private function fetchReflectionFunction(Callable $callable) {
         if (is_string($callable) && strpos($callable, '::'))
             $callable = explode('::', $callable);
@@ -182,6 +267,12 @@ class Container {
         return new ReflectionFunction($callable);
     }
 
+    /**
+     * @param ReflectionMethod $ref
+     * @param array $args
+     * @return object[]
+     * @throws \Exception
+     */
     private function provideForFunction($ref, array $args) {
         $injected = [];
         foreach ($ref->getParameters() as $param) {
