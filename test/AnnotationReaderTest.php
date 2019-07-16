@@ -56,11 +56,18 @@ class AnnotationReaderTest extends TestCase {
 
     public function testParseLambdaFunctions()
     {
-        $expected = new AnnotatedMember();
+        $expected = new AnnotatedMember([
+            'tags' => [
+                new Annotation([
+                    'name' => 'foo',
+                    'args' => ['bar'],
+                ]),
+            ]
+        ]);
 
         $this->assertEquals(
             $expected,
-            AnnotationReader::parse(new \ReflectionFunction(function(){ echo "Hello"; }))
+            AnnotationReader::parse(new \ReflectionFunction(/** @foo(bar) */function(){ echo "Hello"; }))
         );
     }
 }
