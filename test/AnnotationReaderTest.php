@@ -1,6 +1,9 @@
 <?php
 namespace Test;
 
+use Lipht\AnnotatedClass;
+use Lipht\AnnotatedMember;
+use Lipht\Annotation;
 use Lipht\AnnotationReader;
 use Test\Helper\AnnotatedDummy;
 
@@ -8,44 +11,44 @@ class AnnotationReaderTest extends TestCase {
     public function testParseClass() {
         $class = new \ReflectionClass(AnnotatedDummy::class);
 
-        $expected = (object)[
+        $expected = new AnnotatedClass([
             'tags' => [
-                (object)[
+                new Annotation([
                     'name' => 'foo',
                     'args' => ['']
-                ],
-                (object)[
+                ]),
+                new Annotation([
                     'name' => 'bar',
                     'args' => ['baz']
-                ],
-                (object)[
+                ]),
+                new Annotation([
                     'name' => 'baz',
                     'args' => ['', 'bar']
-                ],
+                ]),
             ],
             'methods' => (object)[
-                'hello' => (object)[
+                'hello' => new AnnotatedMember([
                     'tags' => [
-                        (object)[
+                        new Annotation([
                             'name' => 'annotate',
                             'args' => ['this'],
-                        ],
+                        ]),
                     ],
-                ],
-                'world' => (object)[
+                ]),
+                'world' => new AnnotatedMember([
                     'tags' => [
-                        (object)[
+                        new Annotation([
                             'name' => 'fiz',
                             'args' => ['buz', 'a:\w+\d+'],
-                        ],
-                        (object)[
+                        ]),
+                        new Annotation([
                             'name' => 'empty',
                             'args' => ['method', 'is', 'sad'],
-                        ],
+                        ]),
                     ],
-                ],
+                ]),
             ],
-        ];
+        ]);
 
         $this->assertEquals($expected, AnnotationReader::parse($class),
             'Bad format');
