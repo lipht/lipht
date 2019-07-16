@@ -53,4 +53,14 @@ class AnnotationReaderTest extends TestCase {
         $this->assertEquals($expected, AnnotationReader::parse($class),
             'Bad format');
     }
+
+    public function testParseLambdaFunctions()
+    {
+        $expected = new AnnotatedMember();
+
+        $this->assertEquals(
+            $expected,
+            AnnotationReader::parse(new \ReflectionFunction(function(){ echo "Hello"; }))
+        );
+    }
 }

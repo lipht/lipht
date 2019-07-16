@@ -6,5 +6,5 @@ class AnnotatedMember
     use Fillable;
 
     /** @var Annotation[] */
-    public $tags;
+    public $tags = [];
 }
