@@ -4,7 +4,7 @@
 namespace Lipht;
 
 
-class AnnotatedDoc
+class AnnotatedMember
 {
     use Fillable;
 
@@ -12,9 +12,4 @@ class AnnotatedDoc
      * @var Annotation[]
      */
     public $tags;
-
-    /**
-     * @var object
-     */
-    public $methods;
 }

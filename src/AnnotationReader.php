@@ -32,7 +32,7 @@ class AnnotationReader {
             $children[$method->getName()] = static::parse($method);
         }
 
-        return new AnnotatedDoc([
+        return new AnnotatedClass([
             'tags' => $annotations,
             'methods' => (object) $children,
         ]);
@@ -41,7 +41,7 @@ class AnnotationReader {
     private static function parseMember($target) {
         $annotations = static::parseDoc($target->getDocComment());
 
-        return new AnnotatedDoc([
+        return new AnnotatedMember([
             'tags' => $annotations
         ]);
     }
