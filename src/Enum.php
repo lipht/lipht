@@ -1,18 +1,44 @@
 <?php
 namespace Lipht;
 
-abstract class Enum implements \JsonSerializable {
+use JsonSerializable;
+use ReflectionClass;
+use ReflectionException;
+
+abstract class Enum implements JsonSerializable {
     // element
+    /** @var integer $ordinal */
     private $ordinal;
+
+    /** @var string $name */
     private $name;
+
+    /** @var array $extra */
     private $extra;
 
+    // definition
+    /** @var Enum[] $baked */
+    private static $baked = [];
+
+    /** @var Enum[] $properties */
+    private static $properties = [];
+
+    /**
+     * Enum constructor.
+     * @param int $ordinal
+     * @param string $name
+     * @param array $extra
+     */
     private function __construct($ordinal, $name, $extra = null) {
         $this->ordinal = $ordinal;
         $this->name = $name;
         $this->extra = $extra ?? [];
     }
 
+    /**
+     * @param string $propertyName
+     * @return mixed|null
+     */
     public function __get($propertyName) {
         if ($propertyName === 'ordinal')
             return $this->ordinal;
@@ -23,20 +49,27 @@ abstract class Enum implements \JsonSerializable {
         return null;
     }
 
+    /**
+     * @return string
+     */
     public function jsonSerialize() {
         return $this->name;
     }
 
+    /**
+     * @return string
+     */
     public function __toString() {
         return $this->name;
     }
 
-    // definition
-    private static $baked = [];
-    private static $properties = [];
-
+    /**
+     * @return array|mixed
+     * @throws ReflectionException
+     * @throws \Exception
+     */
     public static function values() {
-        $meta = new \ReflectionClass(static::class);
+        $meta = new ReflectionClass(static::class);
         if ($meta->isAbstract())
             return [];
 
@@ -48,11 +81,14 @@ abstract class Enum implements \JsonSerializable {
         return self::$properties[static::class];
     }
 
+    /**
+     * @throws ReflectionException
+     */
     public static function bake() {
         if (in_array(static::class, self::$baked))
             return;
 
-        $meta = new \ReflectionClass(static::class);
+        $meta = new ReflectionClass(static::class);
         if ($meta->isAbstract())
             return;
 
@@ -119,12 +155,16 @@ abstract class Enum implements \JsonSerializable {
         self::$properties[static::class] = $properties;
     }
 
+    /**
+     * @throws ReflectionException
+     */
     public static function bakeAll() {
         $all = get_declared_classes();
         foreach($all as $class) {
             if (!is_subclass_of($class, Enum::class))
                 continue;
 
+            /** @var Enum $class */
             $class::bake();
         }
     }

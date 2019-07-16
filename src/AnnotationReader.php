@@ -1,17 +1,38 @@
 <?php
 namespace Lipht;
 
-class AnnotationReader {
-    public static function parse($target) {
-        if (is_a($target, \ReflectionClass::class))
-            return static::parseClass($target);
+use ReflectionClass;
+use ReflectionMethod;
+use ReflectionProperty;
 
-        if (is_a($target, \ReflectionMethod::class)
-            || is_a($target, \ReflectionProperty::class))
-            return static::parseMember($target);
+class AnnotationReader {
+
+    private function __construct()
+    {
     }
 
-    private static function parseClass(\ReflectionClass $target) {
+    /**
+     * @param ReflectionMethod|ReflectionProperty|ReflectionClass $target
+     * @return AnnotatedMember|AnnotatedClass
+     * @throws \Exception
+     */
+    public static function parse($target) {
+        if (is_a($target, ReflectionClass::class))
+            return static::parseClass($target);
+
+        if (is_a($target, ReflectionMethod::class)
+            || is_a($target, ReflectionProperty::class))
+            return static::parseMember($target);
+
+        throw new \Exception('Invalid target, expected a Reflection instance');
+    }
+
+    /**
+     * @param ReflectionClass $target
+     * @return AnnotatedClass
+     * @throws \Exception
+     */
+    private static function parseClass(ReflectionClass $target) {
         $annotations = static::parseDoc($target->getDocComment());
         $children = [];
         foreach ($target->getMethods() as $method) {
@@ -21,19 +42,30 @@ class AnnotationReader {
             $children[$method->getName()] = static::parse($method);
         }
 
-        return (object)[
+        return new AnnotatedClass([
             'tags' => $annotations,
-            'methods' => (object)$children,
-        ];
+            'methods' => (object) $children,
+        ]);
     }
 
+    /**
+     * @param ReflectionMethod|ReflectionProperty $target
+     * @return AnnotatedMember
+     */
     private static function parseMember($target) {
         $annotations = static::parseDoc($target->getDocComment());
-        return (object)['tags' => $annotations];
+
+        return new AnnotatedMember([
+            'tags' => $annotations
+        ]);
     }
 
+    /**
+     * @param string|bool $doc
+     * @return Annotation[]
+     */
     private static function parseDoc($doc) {
-        $pattern = '/@(\w+)(?:\(((?:\s*[^\,\(\)\s]*\s*\,?)*)\))?/i';
+        static $pattern = '/@(\w+)(?:\(((?:\s*[^\,\(\)\s]*\s*\,?)*)\))?/i';
         $matches = [];
         $annotations = [];
 
@@ -45,12 +77,14 @@ class AnnotationReader {
             if (empty($matches[0][$i]))
                 continue;
 
-            $annotations[] = (object)[
+            $args = explode(',', $matches[1][$i]);
+
+            $annotations[] = new Annotation([
                 'name' => $matches[0][$i],
                 'args' => array_map(function($part){
                     return trim($part);
-                }, explode(',', $matches[1][$i]))
-            ];
+                }, $args)
+            ]);
         }
 
         return $annotations;
