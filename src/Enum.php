@@ -7,30 +7,20 @@ use ReflectionException;
 
 abstract class Enum implements JsonSerializable {
     // element
-    /**
-     * @var integer $ordinal
-     */
+    /** @var integer $ordinal */
     private $ordinal;
 
-    /**
-     * @var string $name
-     */
+    /** @var string $name */
     private $name;
 
-    /**
-     * @var array $extra
-     */
+    /** @var array $extra */
     private $extra;
 
     // definition
-    /**
-     * @var Enum[] $baked
-     */
+    /** @var Enum[] $baked */
     private static $baked = [];
 
-    /**
-     * @var Enum[] $properties
-     */
+    /** @var Enum[] $properties */
     private static $properties = [];
 
     /**

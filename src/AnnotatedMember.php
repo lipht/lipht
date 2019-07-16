@@ -1,15 +1,10 @@
 <?php
-
-
 namespace Lipht;
-
 
 class AnnotatedMember
 {
     use Fillable;
 
-    /**
-     * @var Annotation[]
-     */
+    /** @var Annotation[] */
     public $tags;
 }

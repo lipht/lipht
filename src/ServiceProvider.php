@@ -1,8 +1,5 @@
 <?php
-
-
 namespace Lipht;
-
 
 use ReflectionClass;
 
@@ -10,18 +7,12 @@ class ServiceProvider
 {
     use Fillable;
 
-    /**
-     * @var object
-     */
+    /** @var object */
     public $subject;
 
-    /**
-     * @var ReflectionClass
-     */
+    /** @var ReflectionClass */
     public $meta;
 
-    /**
-     * @var Callable|null
-     */
+    /** @var Callable|null */
     public $provider;
 }

@@ -1,13 +1,8 @@
 <?php
-
-
 namespace Lipht;
-
 
 class AnnotatedClass extends AnnotatedMember
 {
-    /**
-     * @var object
-     */
+    /** @var object */
     public $methods;
 }

@@ -7,24 +7,16 @@ use ReflectionException;
  * @method static listServices(Container|null $container)
  */
 abstract class Module {
-    /**
-     * @var Container|null $parentContainer
-     */
+    /** @var Container|null $parentContainer */
     protected $parentContainer = null;
 
-    /**
-     * @var Container|null $container
-     */
+    /** @var Container|null $container */
     protected $container = null;
 
-    /**
-     * @var Module[] $children
-     */
+    /** @var Module[] $children */
     protected $children = [];
 
-    /**
-     * @var Module[] $instances
-     */
+    /** @var Module[] $instances */
     private static $instances = [];
 
     // Declare a static listServices(Container) to provide services in your module

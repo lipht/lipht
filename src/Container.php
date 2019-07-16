@@ -7,19 +7,13 @@ use ReflectionFunction;
 use ReflectionMethod;
 
 class Container {
-    /**
-     * @var Container|null $parent
-     */
+    /** @var Container|null $parent */
     private $parent = null;
 
-    /**
-     * @var ServiceProvider[] $services
-     */
+    /** @var ServiceProvider[] $services */
     private $services = [];
 
-    /**
-     * @var string[] $stack
-     */
+    /** @var string[] $stack */
     private $stack = [];
 
     /**

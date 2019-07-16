@@ -4,9 +4,7 @@ namespace Lipht;
 use Throwable;
 
 class Exception extends \Exception {
-    /**
-     * @var array $extraData
-     */
+    /** @var array $extraData */
     private $extraData;
 
     /**
