@@ -29,11 +29,11 @@ class Container {
         if (!$meta->isInstantiable() && !$provider)
             throw new \Exception('Cannot add service, class not instantiable. ('.$meta->getName().')');
 
-        $this->services[] = (object)[
+        $this->services[] = new ServiceProvider([
             'subject' => $service,
             'meta' => $meta,
             'provider' => $provider,
-        ];
+        ]);
     }
 
     public function isAvailable(string $service) : bool {

@@ -32,15 +32,18 @@ class AnnotationReader {
             $children[$method->getName()] = static::parse($method);
         }
 
-        return (object)[
+        return new AnnotatedDoc([
             'tags' => $annotations,
-            'methods' => (object)$children,
-        ];
+            'methods' => (object) $children,
+        ]);
     }
 
     private static function parseMember($target) {
         $annotations = static::parseDoc($target->getDocComment());
-        return (object)['tags' => $annotations];
+
+        return new AnnotatedDoc([
+            'tags' => $annotations
+        ]);
     }
 
     private static function parseDoc($doc) {
@@ -56,12 +59,14 @@ class AnnotationReader {
             if (empty($matches[0][$i]))
                 continue;
 
-            $annotations[] = (object)[
+            $args = explode(',', $matches[1][$i]);
+
+            $annotations[] = new Annotation([
                 'name' => $matches[0][$i],
                 'args' => array_map(function($part){
                     return trim($part);
-                }, explode(',', $matches[1][$i]))
-            ];
+                }, $args)
+            ]);
         }
 
         return $annotations;
