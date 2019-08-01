@@ -81,6 +81,18 @@ abstract class Enum implements JsonSerializable {
         return self::$properties[static::class];
     }
 
+    public static function valueOf(int $ordinal) {
+        $values = self::values();
+
+        foreach ($values as $property) {
+            if ($property->ordinal === $ordinal) {
+                return $property;
+            }
+        }
+
+        return null;
+    }
+
     /**
      * @throws ReflectionException
      */
