@@ -47,6 +47,25 @@ class EnumTest extends TestCase {
 
         $this->assertEquals($expected, $result);
     }
+
+    public function testValueOf()
+    {
+        Enum::bakeAll();
+
+        $expected = EnumHelper::$bar;
+        $result = EnumHelper::valueOf(3);
+
+        $this->assertEquals($expected, $result);
+    }
+
+    public function testValueOfWithInvalidOrdinal()
+    {
+        Enum::bakeAll();
+
+        $result = EnumHelper::valueOf(42);
+
+        $this->assertNull($result);
+    }
 }
 
 class EnumHelper extends Enum {

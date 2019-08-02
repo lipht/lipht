@@ -82,6 +82,15 @@ abstract class Enum implements JsonSerializable {
     }
 
     /**
+     * @param int $ordinal
+     * @return mixed|null
+     * @throws ReflectionException
+     */
+    public static function valueOf(int $ordinal) {
+        return self::values()[$ordinal] ?? null;
+    }
+
+    /**
      * @throws ReflectionException
      */
     public static function bake() {
