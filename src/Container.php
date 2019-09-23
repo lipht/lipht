@@ -25,7 +25,7 @@ class Container {
     }
 
     /**
-     * @param object|array $service
+     * @param object|array|string $service
      * @param callable|null $provider
      * @throws ReflectionException
      * @throws \Exception
